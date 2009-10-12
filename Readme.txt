@@ -1,20 +1,10 @@
-EXAMPLE:
-========
+CHANGES 0.3:
+=============
 
-If you want to give it a try create this table
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(255) NOT NULL,
-  `dateOfBirth` date NOT NULL,
-  `lastLogin` datetime NOT NULL,
-  `description` text NOT NULL,
-  `createdAt` datetime DEFAULT NULL,
-  `updatedAt` datetime DEFAULT NULL,
-  PRIMARY KEY  (`id`)
-)
-
-And execute the form with object name equal to "user"
+- The "new" and "edit" actions now output the table columns in the same order as in the actual table.
+- Replaced the "info" flash message with "error" in the controller template.
+- Fix a possible bug where model("") was calling plural object instead of singular.
+- Removed a manual database introspection in the "generateListingViewFromModel" and "generateShowViewFromModel" methods.
 
 CHANGES 0.2.6:
 =============

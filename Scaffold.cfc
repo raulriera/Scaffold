@@ -193,7 +193,8 @@
 		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
 		
 		<!--- Introspect the table to find the column names and types --->		
-		<cfset loc.columns = model(loc.nameInPluralLowercase).$classData()>
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
+		<cfset loc.columnsInOrder = loc.columns.columnList>
 
 		<cfprocessingdirective suppressWhiteSpace="true">
 		<cfsavecontent variable="loc.form">
@@ -203,8 +204,8 @@
 	
 			[startFormTag(action="create")]
 		
-				<cfloop collection="#loc.columns.properties#" item="loc.property">
-					<cfif ListFindNoCase(model(loc.nameInPluralLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
+				<cfloop list="#loc.columnsInOrder#" index="loc.property">
+					<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
 						<p><label>#humanize(loc.columns.properties[loc.property].COLUMN)#</label> <br />
 							[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]</p>
 					</cfif>
@@ -240,18 +241,18 @@
 		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
 		
 		<!--- Introspect the table to find the column names and types --->		
-		<cfset loc.columns = model(loc.nameInPluralLowercase).$classData()>
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
+		<cfset loc.columnsInOrder = loc.columns.columnList>
 		
 		<cfprocessingdirective suppressWhiteSpace="true">
 		<cfsavecontent variable="loc.form">
-			
 			<cfoutput>
 			[errorMessagesFor("<cfoutput>#loc.nameInSingularLowercase#</cfoutput>")]
 	
 			[startFormTag(action="update", key=params.key)]
 		
-				<cfloop collection="#loc.columns.properties#" item="loc.property">
-					<cfif ListFindNoCase(model(loc.nameInPluralLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
+				<cfloop list="#loc.columnsInOrder#" index="loc.property">
+					<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
 						<p><label>#humanize(loc.columns.properties[loc.property].COLUMN)#</label> <br />
 							[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]</p>
 					</cfif>
@@ -327,15 +328,14 @@
 		<cfset loc.nameInPluralLowercase = LCase(pluralize(arguments.name))>
 		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
 		
-		<!--- Introspect the table to find the column names and types 
-			  MAKE THIS automatic soon --->
-		<cfdbinfo datasource="#get('dataSourceName')#" name="loc.columns" type="columns" table="#loc.nameInPluralLowercase#">
+		<!--- Introspect the table to find the column names --->
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData().columnList>
 		
 		<cfprocessingdirective suppressWhiteSpace="true">
 		<cfsavecontent variable="loc.form">
 			<cfoutput>
-				<cfloop query="loc.columns">
-					[cfcol header="#humanize(COLUMN_NAME)#" text="###COLUMN_NAME###" /]
+				<cfloop list="#loc.columns#" index="loc.column">
+					[cfcol header="#humanize(loc.column)#" text="###loc.column###" /]
 				</cfloop>
 			</cfoutput>
 		</cfsavecontent>
@@ -358,16 +358,15 @@
 		<cfset loc.nameInPluralLowercase = LCase(pluralize(arguments.name))>
 		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
 		
-		<!--- Introspect the table to find the column names and types 
-			  MAKE THIS automatic soon --->
-		<cfdbinfo datasource="#get('dataSourceName')#" name="loc.columns" type="columns" table="#loc.nameInPluralLowercase#">
+		<!--- Introspect the table to find the column names --->
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData().columnList>
 		
 		<cfprocessingdirective suppressWhiteSpace="true">
 		<cfsavecontent variable="loc.form">
 			<cfoutput>
-				<cfloop query="loc.columns">
-					<p><label>#humanize(COLUMN_NAME)#</label> <br />
-						###loc.nameInSingularLowercase & "." & COLUMN_NAME###</p>
+				<cfloop list="#loc.columns#" index="loc.column">
+					<p><label>#humanize(loc.column)#</label> <br />
+						###loc.nameInSingularLowercase & "." & loc.column###</p>
 				</cfloop>
 			</cfoutput>
 		</cfsavecontent>
