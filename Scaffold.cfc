@@ -89,7 +89,7 @@
 	    		<cfset loc.file = $replacePlaceHolders(loc.file, arguments.name)> --->
 	            
 	            <!--- Write the file in the corresponding folder --->
-	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(arguments.name)#.cfc" output="#loc.file#" mode="644"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(arguments.name)#.cfc" output="#loc.file#" mode="777"> 
 	        </cfcase>
 	        
 	        <cfcase value="View">
@@ -132,10 +132,10 @@
 	            <cfset loc.fileShow = ReplaceNoCase(loc.fileShow, "LISTINGCOLUMNS", loc.showListing)>
 	                        
 	            <!--- Write the file in the corresponding folder --->
-	            <cffile action="write" file="#loc.destinationFolderPath#/index.cfm" output="#loc.fileIndex#" mode="644"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/show.cfm" output="#loc.fileShow#" mode="644"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/new.cfm" output="#loc.fileNew#" mode="644"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/edit.cfm" output="#loc.fileEdit#" mode="644"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/index.cfm" output="#loc.fileIndex#" mode="777"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/show.cfm" output="#loc.fileShow#" mode="777"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/new.cfm" output="#loc.fileNew#" mode="777"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/edit.cfm" output="#loc.fileEdit#" mode="777"> 
 	            
 	        </cfcase>
 	        
@@ -151,7 +151,7 @@
 	    		<cfset loc.file = $replacePlaceHolders(loc.file, arguments.name)>
 	            
 	            <!--- Write the file in the corresponding folder --->
-	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(pluralize(arguments.name))#.cfc" output="#loc.file#" mode="644"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(pluralize(arguments.name))#.cfc" output="#loc.file#" mode="777"> 
 	        </cfcase>
 	        
 	        <cfdefaultcase>
