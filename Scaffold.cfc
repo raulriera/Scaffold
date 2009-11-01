@@ -421,7 +421,7 @@
 		    <cfset loc.message = "File 'controllers/#capitalize(pluralize(arguments.name))#.cfc' already exists so skipped.">
 		<cfelse>
 			<cfset $moveFileToFolder(arguments.name, "Controller")>
-		    <cfset loc.message = "File 'controllers/#capitalize(arguments.name)#.cfc' created.">
+		    <cfset loc.message = "File 'controllers/#capitalize(pluralize(arguments.name))#.cfc' created.">
 		</cfif>
 		
 		<cfreturn loc.message>
