@@ -1,9 +1,17 @@
-Scaffold plugin for ColdFusion on Wheels
-========================================
+## Scaffold plugin for ColdFusion on Wheels
 
-Simple scaffold your ColdFusion on Wheels application with this plugin
+> Version 0.3
 
-Usage
------
+## About
 
-Download the plugin and drop it inside the /plugins folder in your Wheels application. Alternately you can use the official Plugin Manager and install the app from there (recommended)
+Easily create your Controller, Model and Views for your ColdFusion on Wheels applications with this plugin
+
+## Installation (manual)
+
+* Drop it inside the /plugins folder in your Wheels application. 
+* Restart your application using ?reload=true
+
+## Installation using the Plugin Manager (recommended)
+
+* Go to the official Plugin Manager.
+* Click to download the Scaffold plugin.
