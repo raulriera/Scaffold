@@ -14,14 +14,7 @@
     	<!--- Check if the record exists --->
 	    <cfif NOT IsObject([NameSingularLowercase])>
 	        <cfset flashInsert(error="[NameSingularUppercase] #params.key# was not found")>
-	        
-	        <cftry>
-	        	<cfset redirectTo(back=true)>
-	        	
-	        	<cfcatch type="Wheels.RedirectBackError">
-	        		<cfset redirectTo(action="index")>
-	        	</cfcatch>
-	        </cftry>
+	        <cfset redirectTo(action="index")>
 	    </cfif>
 			
 	</cffunction>
@@ -40,14 +33,7 @@
     	<!--- Check if the record exists --->
 	    <cfif NOT IsObject([NameSingularLowercase])>
 	        <cfset flashInsert(error="[NameSingularUppercase] #params.key# was not found")>
-	       	
-	       	<cftry>
-	        	<cfset redirectTo(back=true)>
-	        	
-	        	<cfcatch type="Wheels.RedirectBackError">
-	        		<cfset redirectTo(action="index")>
-	        	</cfcatch>
-	        </cftry>
+			<cfset redirectTo(action="index")>
 	    </cfif>
 		
 	</cffunction>
