@@ -1,7 +1,7 @@
 <cfcomponent output="false" mixin="controller" environment="design,development">
 
 	<cffunction name="init">
-		<cfset this.version = "0.9.4">
+		<cfset this.version = "1.0">
 		<cfreturn this>
 	</cffunction>
 	
@@ -9,7 +9,7 @@
 		<cfargument name="name" type="string" required="true" hint="Name of the object to scaffold">
 		<cfargument name="type" type="string" required="true" default="everything" hint="Type of generation to execute, values are: everything, controller, model">
 		
-		<cfset var loc = {}>
+		<cfset var loc = false>
 		
 		<!--- Setup the information for the user --->
 		<cfset loc.message = "">
