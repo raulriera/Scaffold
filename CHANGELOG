@@ -1,3 +1,9 @@
+CHANGES 0.3.1:
+=============
+
+- Compability with Wheels 1.0.
+- Removed the redirectTo(back=true) and <cfcatch type="Wheels.RedirectBackError"> from the controller template, replaced with a redirectTo(action="index").
+
 CHANGES 0.3:
 =============
 
