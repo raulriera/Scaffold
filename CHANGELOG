@@ -3,6 +3,8 @@ CHANGES 0.3.1:
 
 - Compability with Wheels 1.0.
 - Removed the redirectTo(back=true) and <cfcatch type="Wheels.RedirectBackError"> from the controller template, replaced with a redirectTo(action="index").
+- Changes to the new and edit form fields, now is consistent with 
+the cfwheels documentation (no more hardcoded HTML).
 
 CHANGES 0.3:
 =============
