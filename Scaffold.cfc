@@ -206,10 +206,8 @@
 		
 				<cfloop list="#loc.columnsInOrder#" index="loc.property">
 					<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
-						<p><label>#humanize(loc.columns.properties[loc.property].COLUMN)#</label> <br />
-							[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]</p>
-					</cfif>
-											
+						[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]
+					</cfif>											
 				</cfloop>
 
 				[submitTag()]
@@ -253,10 +251,8 @@
 		
 				<cfloop list="#loc.columnsInOrder#" index="loc.property">
 					<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
-						<p><label>#humanize(loc.columns.properties[loc.property].COLUMN)#</label> <br />
-							[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]</p>
-					</cfif>
-											
+						[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]
+					</cfif>										
 				</cfloop>
 				
 				[submitTag()]
@@ -286,32 +282,32 @@
 		<cfswitch expression="#arguments.columnObject.TYPE#">
 			<cfcase value="cf_sql_bit,cf_sql_tinyint" delimiters=",">
 				<!--- Return a checkbox --->
-				<cfset loc.fieldTag = "checkBox(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#')">
+				<cfset loc.fieldTag = "checkBox(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', label='#humanize(arguments.columnObject.COLUMN)#')">
 			</cfcase>
 
 			<cfcase value="cf_sql_longvarchar">
 				<!--- Return a textarea --->
-				<cfset loc.fieldTag = "textArea(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#')">
+				<cfset loc.fieldTag = "textArea(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', label='#humanize(arguments.columnObject.COLUMN)#')">
 			</cfcase>
 
 			<cfcase value="cf_sql_date">
 				<!--- Return a calendar --->
-				<cfset loc.fieldTag = "dateSelect(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#')">
+				<cfset loc.fieldTag = "dateSelect(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', label='#humanize(arguments.columnObject.COLUMN)#')">
 			</cfcase>
 
 			<cfcase value="cf_sql_time">
 				<!--- Return a time picker --->
-				<cfset loc.fieldTag = "timeSelect(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#')">
+				<cfset loc.fieldTag = "timeSelect(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', label='#humanize(arguments.columnObject.COLUMN)#')">
 			</cfcase>
 
 			<cfcase value="cf_sql_timestamp">
 				<!--- Return a calendar and time picker --->
-				<cfset loc.fieldTag = "dateTimeSelect(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', dateOrder='year,month,day', monthDisplay='abbreviations')">
+				<cfset loc.fieldTag = "dateTimeSelect(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', dateOrder='year,month,day', monthDisplay='abbreviations', label='#humanize(arguments.columnObject.COLUMN)#')">
 			</cfcase>
 
 			<cfdefaultcase>
 				<!--- Return a text if everything fails --->
-				<cfset loc.fieldTag = "textField(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#')">
+				<cfset loc.fieldTag = "textField(objectName='#arguments.objectName#', property='#arguments.columnObject.COLUMN#', label='#humanize(arguments.columnObject.COLUMN)#')">
 			</cfdefaultcase>
 		</cfswitch>
 		
