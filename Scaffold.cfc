@@ -9,7 +9,7 @@
 		<cfargument name="name" type="string" required="true" hint="Name of the object to scaffold">
 		<cfargument name="type" type="string" required="true" default="everything" hint="Type of generation to execute, values are: everything, controller, model">
 		
-		<cfset var loc = false>
+		<cfset var loc = {}>
 		
 		<!--- Setup the information for the user --->
 		<cfset loc.message = "">
