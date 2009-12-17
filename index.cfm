@@ -16,7 +16,7 @@
 <cfif isDefined("URL.objectToScaffold") AND isDefined("URL.typeOfScaffold")>
     
     <cfoutput>
-    	<p><tt>#generateScaffold(URL.objectToScaffold, URL.typeOfScaffold)#</tt></p>
+    	<p><tt>#generateScaffold(URL.objectToScaffold, URL.typeOfScaffold, URL.scriptStyle)#</tt></p>
     </cfoutput>
     
     <p>Create another one?</p>
@@ -29,7 +29,6 @@
 
 <!--- Form --->
 <cfform action="#CGI.script_name & '?' & CGI.query_string#">
-
 	<p><label for="objectToScaffold">Object name</label> <br>
 	<cfinput type="text" name="objectToScaffold"></p>
 	
@@ -40,6 +39,12 @@
 		<option value="model">Model</option>
 	</cfselect>
 	</p>	
+	
+	<p><label for="scriptStyle">Use CF9 script style controller and model</label>
+	    <select name="scriptStyle">
+	    <option value="false">No</option>
+	    <option value="true">Yes</option>
+	    </select></p>
 	
 	<p><cfinput type="submit" name="btnSubmit" value="Generate"></p>
 	

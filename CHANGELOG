@@ -1,7 +1,13 @@
+CHANGES 0.4:
+=============
+
+- Added the ability to choose from tag based or script based syntax. (Thanks to Russ Johnson)
+- Added mode="777" to the views folder (if I don't the folder seems to "lock" on Linux. Better approaches are appreciated)
+
 CHANGES 0.3.1:
 =============
 
-- Compability with Wheels 1.0.
+- Compatibility with Wheels 1.0.
 - Removed the redirectTo(back=true) and <cfcatch type="Wheels.RedirectBackError"> from the controller template, replaced with a redirectTo(action="index").
 - Changes to the new and edit form fields, now is consistent with the cfwheels documentation (no more hardcoded HTML).
 
