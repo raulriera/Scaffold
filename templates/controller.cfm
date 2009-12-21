@@ -1,4 +1,4 @@
-<cfcomponent extends="Controller">
+<cfcomponent extends="Controller" output="false">
 	
 	<!--- [NamePluralLowercaseDeHumanized]/index --->
 	<cffunction name="index">

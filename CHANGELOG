@@ -3,6 +3,7 @@ CHANGES 0.4:
 
 - Added the ability to choose from tag based or script based syntax. (Thanks to Russ Johnson)
 - Added mode="777" to the views folder (if I don't the folder seems to "lock" on Linux. Better approaches are appreciated)
+- Added output="false" to the tag based controller and model templates.
 
 CHANGES 0.3.1:
 =============
