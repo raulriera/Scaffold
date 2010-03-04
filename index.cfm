@@ -1,3 +1,6 @@
+<!--- get the available templates from the template folder --->
+<cfset templates = getTemplates()>
+
 <h1>Scaffold</h1>
 
 <p>This plugin will enable Scaffolding in your application, to use it, follow the instructions below.</p>
@@ -16,7 +19,7 @@
 <cfif isDefined("URL.objectToScaffold") AND isDefined("URL.typeOfScaffold")>
     
     <cfoutput>
-    	<p><tt>#generateScaffold(URL.objectToScaffold, URL.typeOfScaffold, URL.scriptStyle)#</tt></p>
+    	<p><tt>#generateScaffold(URL.objectToScaffold, URL.typeOfScaffold, URL.template)#</tt></p>
     </cfoutput>
     
     <p>Create another one?</p>
@@ -38,13 +41,18 @@
 		<option value="controller">Controller</option>
 		<option value="model">Model</option>
 	</cfselect>
-	</p>	
+	</p>
 	
-	<p><label for="scriptStyle">Use CF9 script style controller and model</label>
-	    <select name="scriptStyle">
-	    <option value="false">No</option>
-	    <option value="true">Yes</option>
-	    </select></p>
+	<p>
+	    <label for="template">Template</label> <br>
+	    <cfselect name="template">
+	        <cfoutput query="templates">
+	            <cfif type is "DIR">
+	                <option value="#name#">#name#</option>
+	            </cfif>
+	        </cfoutput>
+    	</cfselect>
+	</p>	
 	
 	<p><cfinput type="submit" name="btnSubmit" value="Generate"></p>
 	

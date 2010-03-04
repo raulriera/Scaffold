@@ -1,5 +1,9 @@
 ## Scaffold plugin for ColdFusion on Wheels
 
+> Version 0.3.1
+
+## About
+
 Easily create your Controller, Model and Views for your ColdFusion on Wheels applications with this plugin
 
 ## Installation (manual)

@@ -1,3 +1,10 @@
+CHANGES 0.5:
+=============
+- Compatibility with Wheels 1.0.2.
+- Removed CF9 script syntax option (Thanks to Russ Johnson).
+- Added ability to use different templates for scaffolding (Thanks to Russ Johnson). 
+- Added CF9 script style templates and CF8 script style templates(Thanks to Russ Johnson). 
+
 CHANGES 0.4:
 =============
 
