@@ -5,6 +5,8 @@
 
 <p>This plugin will enable Scaffolding in your application, to use it, follow the instructions below.</p>
 
+<p><tt>Note:</tt> the flash messages aren't displayed in the views unless you either make a bit of logic to display the correct one, or use the "Flash Helpers" plugin (soon to be released as a core feature in Wheels 1.1)</p>
+
 <h2>Instructions</h2>
 
 <ul>
