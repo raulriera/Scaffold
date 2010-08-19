@@ -1,7 +1,11 @@
+BLEEDING EDGE:
+=============
+- Fix for issue #15
+
 CHANGES 0.6:
 =============
 - Compatibility with Wheels 1.0.5.
-- Made the "default" tempalte appear at the top.
+- Made the "default" template appear at the top.
 - Updated the docs to reflect why the flash messages are not used in the views.
 
 CHANGES 0.5:

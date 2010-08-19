@@ -363,7 +363,7 @@
 		<cfsavecontent variable="loc.form">
 			<cfoutput>
 				<cfloop list="#loc.columns#" index="loc.column">
-					<p><label>#humanize(loc.column)#</label> <br />
+					<p><span>#humanize(loc.column)#</span> <br />
 						###loc.nameInSingularLowercase & "." & loc.column###</p>
 				</cfloop>
 			</cfoutput>
