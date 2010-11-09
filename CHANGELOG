@@ -1,6 +1,7 @@
-BLEEDING EDGE:
+CHANGES 0.7:
 =============
-- Fix for issue #15
+- Fix for issue #15, 14 and 18
+- Compatibility with Wheels 1.1.
 
 CHANGES 0.6:
 =============
