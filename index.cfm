@@ -5,7 +5,7 @@
 
 <p>This plugin will enable Scaffolding in your application, to use it, follow the instructions below.</p>
 
-<p><tt>Note:</tt> the flash messages aren't displayed in the views unless you either make a bit of logic to display the correct one, or use the "Flash Helpers" plugin (soon to be released as a core feature in Wheels 1.1)</p>
+<p><tt>Note:</tt> the flash messages aren't displayed in the views unless you either make a bit of logic to display the correct one, or use the "flashMessages()" method to quickly dump your flash messages.</p>
 
 <h2>Instructions</h2>
 
@@ -18,10 +18,10 @@
 
 <h2>Generate form</h2>
 
-<cfif isDefined("URL.objectToScaffold") AND isDefined("URL.typeOfScaffold")>
+<cfif isDefined("FORM.objectToScaffold") AND isDefined("FORM.typeOfScaffold")>
     
     <cfoutput>
-    	<p><tt>#generateScaffold(URL.objectToScaffold, URL.typeOfScaffold, URL.template)#</tt></p>
+    	<p><tt>#generateScaffold(FORM.objectToScaffold, FORM.typeOfScaffold, FORM.template)#</tt></p>
     </cfoutput>
     
     <p>Create another one?</p>
@@ -49,7 +49,7 @@
 	    <label for="template">Template</label> <br>
 	    <cfselect name="template">
 	        <cfoutput query="templates">
-	            <cfif type is "DIR">
+	            <cfif type is "DIR" AND !reFind("^.\w*",name)>
 	                <option value="#name#">#name#</option>
 	            </cfif>
 	        </cfoutput>
