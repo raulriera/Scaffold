@@ -49,7 +49,7 @@
 	    <label for="template">Template</label> <br>
 	    <cfselect name="template">
 	        <cfoutput query="templates">
-	            <cfif type is "DIR" AND !reFind("^.\w*",name)>
+	            <cfif type is "DIR">
 	                <option value="#name#">#name#</option>
 	            </cfif>
 	        </cfoutput>
