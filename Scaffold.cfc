@@ -41,7 +41,6 @@
 		    <!--- Create the controller --->
 		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
 	    </cfif>
-	    
 		<cfreturn loc.message>	    
 	</cffunction>
 	
