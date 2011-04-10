@@ -1,7 +1,7 @@
 <cfcomponent output="false" mixin="controller" environment="design,development">
 
 	<cffunction name="init">
-		<cfset this.version = "1.0,1.0.1,1.0.2">
+		<cfset this.version = "1.0,1.0.1,1.0.2,1.1">
 		<cfreturn this>
 	</cffunction>
 	
@@ -26,6 +26,14 @@
 			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template) & "<br/>">
 			<!--- Create the controller --->
 		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
+		<cfelseif arguments.type IS "model_controller">
+			<!--- Create the model --->
+		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
+			<!--- Create the controller --->
+		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
+		<cfelseif arguments.type IS "view">
+		    <!--- Create the views --->
+			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template) & "<br/>">
 		<cfelseif arguments.type IS "model">
 			<!--- Create the model --->
 		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
@@ -363,7 +371,7 @@
 		<cfsavecontent variable="loc.form">
 			<cfoutput>
 				<cfloop list="#loc.columns#" index="loc.column">
-					<p><label>#humanize(loc.column)#</label> <br />
+					<p><span>#humanize(loc.column)#</span> <br />
 						###loc.nameInSingularLowercase & "." & loc.column###</p>
 				</cfloop>
 			</cfoutput>
@@ -455,9 +463,9 @@
 	<cffunction name="getTemplates" access="public" output="false" hint="Gets a list of the available templates from the template folder to make a select list.">
 	   
 	    <cfset var loc = {}>
-	    <cfset loc.templateFolderPath = expandPath("plugins/scaffold/templates")>
+	    <cfset loc.templateFolderPath = ExpandPath("plugins/scaffold/templates")>
 	            
-	    <cfdirectory action="list" directory="#loc.templateFolderPath#" name="loc.templateList">
+	    <cfdirectory action="list" directory="#loc.templateFolderPath#" name="loc.templateList" sort="name DESC">
 	            
 	    <cfreturn loc.templateList>
 	</cffunction>
