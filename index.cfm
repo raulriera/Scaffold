@@ -39,7 +39,6 @@
 	
 	<p><label for="typeOfScaffold">Type</label> <br>
 	<cfselect name="typeOfScaffold" required="true" message="A Type is required">
-		<option value="" selected="selected">Please Select a Type</option>
 		<option value="everything" selected="selected">Model, Views and Controller</option>
 		<option value="model_controller" selected="selected">Model and Controller</option>
 		<option value="controller">Controller</option>
