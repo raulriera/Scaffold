@@ -26,6 +26,14 @@
 			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template) & "<br/>">
 			<!--- Create the controller --->
 		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
+		<cfelseif arguments.type IS "model_controller">
+			<!--- Create the model --->
+		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
+			<!--- Create the controller --->
+		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
+		<cfelseif arguments.type IS "view">
+		    <!--- Create the views --->
+			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template) & "<br/>">
 		<cfelseif arguments.type IS "model">
 			<!--- Create the model --->
 		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
