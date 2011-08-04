@@ -1,5 +1,7 @@
 <h1>Showing [NameSingularLowercase]</h1>
 
+<cfoutput>#includePartial("showFlash")#</cfoutput>
+
 <cfoutput>
 LISTINGCOLUMNS
 
