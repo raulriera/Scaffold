@@ -35,12 +35,14 @@
 <!--- Form --->
 <cfform action="#CGI.script_name & '?' & CGI.query_string#">
 	<p><label for="objectToScaffold">Object name</label> <br>
-	<cfinput type="text" name="objectToScaffold"></p>
+	<cfinput type="text" name="objectToScaffold" required="true"  message="An Object name is required"></p>
 	
 	<p><label for="typeOfScaffold">Type</label> <br>
-	<cfselect name="typeOfScaffold">
+	<cfselect name="typeOfScaffold" required="true" message="A Type is required">
 		<option value="everything" selected="selected">Model, Views and Controller</option>
+		<option value="model_controller" selected="selected">Model and Controller</option>
 		<option value="controller">Controller</option>
+		<option value="view">View</option>
 		<option value="model">Model</option>
 	</cfselect>
 	</p>

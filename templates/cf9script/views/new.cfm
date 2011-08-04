@@ -1,4 +1,4 @@
-<h1>Create new [NameSingularLowercase]</h1>
+<h1>Create a New [NameSingularLowercase]</h1>
 
 <cfoutput>#includePartial("showFlash")#</cfoutput>
 
