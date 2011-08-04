@@ -60,7 +60,7 @@
 	    <cfdirectory name="loc.files" action="list" directory="#loc.targetFolderPath#" type="file">
 	    
 	    <!--- Check if the desired file is already in the targeted folder --->
-		<cfif FindNoCase(arguments.name, ValueList(loc.files.name)) GT 0 OR DirectoryExists(loc.targetFolderPath) AND arguments.type IS "View">
+		<cfif (ListFindNoCase("#arguments.name#.cfc", ValueList(loc.files.name)) GT 0 AND arguments.type NEQ "View") OR (DirectoryExists(loc.targetFolderPath) AND arguments.type IS "View")>
 	    	<cfset loc.wasFound = true>
 	    <cfelse>
 	    	<cfset loc.wasFound = false>
