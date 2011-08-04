@@ -1,5 +1,7 @@
 <h1>Create new [NameSingularLowercase]</h1>
 
+<cfoutput>#includePartial("showFlash")#</cfoutput>
+
 <cfoutput>
 ENTRYFORM
 
