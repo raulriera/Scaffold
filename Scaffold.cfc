@@ -1,7 +1,7 @@
 <cfcomponent output="false" mixin="controller" environment="design,development">
 
 	<cffunction name="init">
-		<cfset this.version = "1.0,1.0.1,1.0.2,1.1">
+		<cfset this.version = "1.0,1.0.1,1.0.2,1.1,1.1.4,1.1.5">
 		<cfreturn this>
 	</cffunction>
 	
@@ -110,6 +110,7 @@
 	            <cffile action="read" file="#loc.fromFolderPath#/show.cfm" variable="loc.fileShow">
 	            <cffile action="read" file="#loc.fromFolderPath#/new.cfm" variable="loc.fileNew">
 	            <cffile action="read" file="#loc.fromFolderPath#/edit.cfm" variable="loc.fileEdit">
+	            <cffile action="read" file="#loc.fromFolderPath#/_showFlash.cfm" variable="loc.fileShowFlash">
 	            
 	            <!--- Generate the forms and listing for the views --->
 	            <cfset loc.entryForm = $generateEntryFormFromModel(arguments.name)>
@@ -138,6 +139,7 @@
 	            <cffile action="write" file="#loc.destinationFolderPath#/show.cfm" output="#loc.fileShow#" mode="777"> 
 	            <cffile action="write" file="#loc.destinationFolderPath#/new.cfm" output="#loc.fileNew#" mode="777"> 
 	            <cffile action="write" file="#loc.destinationFolderPath#/edit.cfm" output="#loc.fileEdit#" mode="777"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/_showFlash.cfm" output="#loc.fileShowFlash#" mode="777"> 
 	            
 	        </cfcase>
 	        
