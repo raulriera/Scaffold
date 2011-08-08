@@ -5,8 +5,6 @@
 
 <p>This plugin will enable Scaffolding in your application, to use it, follow the instructions below.</p>
 
-<p><tt>Note:</tt> the flash messages aren't displayed in the views unless you either make a bit of logic to display the correct one, or use the "flashMessages()" method to quickly dump your flash messages.</p>
-
 <h2>Instructions</h2>
 
 <ul>
@@ -21,16 +19,18 @@
 <cfif isDefined("FORM.objectToScaffold") AND isDefined("FORM.typeOfScaffold")>
     
     <cfoutput>
-    	<p><tt>#generateScaffold(FORM.objectToScaffold, FORM.typeOfScaffold, FORM.template)#</tt></p>
+    	<p><tt>
+    	#generateScaffold(FORM.objectToScaffold, FORM.typeOfScaffold, FORM.template)#
+    	</tt></p>
     </cfoutput>
     
     <p>Create another one?</p>
     
 <cfelse>
-
-	<p><tt>Example: If your table is named "users", insert "user" in the form field below.</tt></p>
     
 </cfif>
+
+<p><tt>Example: If your table is named "users", insert "user" in the form field below.</tt></p>
 
 <!--- Form --->
 <cfform action="#CGI.script_name & '?' & CGI.query_string#">
@@ -39,8 +39,8 @@
 	
 	<p><label for="typeOfScaffold">Type</label> <br>
 	<cfselect name="typeOfScaffold" required="true" message="A Type is required">
-		<option value="everything" selected="selected">Model, Views and Controller</option>
-		<option value="model_controller" selected="selected">Model and Controller</option>
+		<option value="everything" selected="selected" >Model, Views and Controller</option>
+		<option value="model_controller">Model and Controller</option>
 		<option value="controller">Controller</option>
 		<option value="view">View</option>
 		<option value="model">Model</option>
