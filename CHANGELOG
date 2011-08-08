@@ -1,3 +1,9 @@
+CHANGES 0.8.1:
+===========
+- Fixed problem with the Type select box having two selected values by default
+- Removed warning note about flash messages not being displayed by default (they are as of 0.8)
+- Included the form instruction text after page submit (previously it wasn't displayed)
+
 CHANGES 0.8:
 ===========
 - Compatibility with Wheels 1.1.5
