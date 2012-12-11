@@ -14,7 +14,7 @@ component extends="Controller" output="false" {
     	
     if (!IsObject([NameSingularLowercase])){
       flashInsert(error="[NameSingularUppercase] #params.key# was not found");
-      redirectTo(action="index");
+      return redirectTo(action="index", delay=true);
     }
   }
   
@@ -29,7 +29,7 @@ component extends="Controller" output="false" {
     	
     if (!IsObject([NameSingularLowercase])){
 	    flashInsert(error="[NameSingularUppercase] #params.key# was not found");
-			redirectTo(action="index");
+			return redirectTo(action="index", delay=true);
 	  }
   }
   
@@ -39,7 +39,7 @@ component extends="Controller" output="false" {
 		
 		if ([NameSingularLowercase].save()){
 			flashInsert(success="The [NameSingularLowercase] was created successfully.");
-      redirectTo(action="index");
+      return redirectTo(action="index", delay=true);
 		} else {
 		  flashInsert(error="There was an error creating the [NameSingularLowercase].");
 		  renderPage(action="new");
@@ -52,7 +52,7 @@ component extends="Controller" output="false" {
 		
 		if ([NameSingularLowercase].update(params.[NameSingularLowercase])){
 		  flashInsert(success="The [NameSingularLowercase] was updated successfully.");
-      redirectTo(action="index");
+      return redirectTo(action="index", delay=true);
 		} else {
 		  flashInsert(error="There was an error updating the [NameSingularLowercase].");
 			renderPage(action="edit");
@@ -65,10 +65,10 @@ component extends="Controller" output="false" {
 
 		if ([NameSingularLowercase].delete()){
 			flashInsert(success="The [NameSingularLowercase] was deleted successfully.");
-      redirectTo(action="index");
+      return redirectTo(action="index", delay=true);
     } else {
       flashInsert(error="There was an error deleting the [NameSingularLowercase].");
-			redirectTo(action="index");
+			return redirectTo(action="index", delay=true);
     }
   }
   
