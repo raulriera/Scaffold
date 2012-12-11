@@ -14,7 +14,7 @@
     	<!--- Check if the record exists --->
 	    <cfif NOT IsObject([NameSingularLowercase])>
 	        <cfset flashInsert(error="[NameSingularUppercase] #params.key# was not found")>
-	        <cfset redirectTo(action="index")>
+	        <cfreturn redirectTo(action="index", delay=true)>
 	    </cfif>
 			
 	</cffunction>
@@ -33,7 +33,7 @@
     	<!--- Check if the record exists --->
 	    <cfif NOT IsObject([NameSingularLowercase])>
 	        <cfset flashInsert(error="[NameSingularUppercase] #params.key# was not found")>
-			<cfset redirectTo(action="index")>
+			<cfreturn redirectTo(action="index", delay=true)>
 	    </cfif>
 		
 	</cffunction>
@@ -45,7 +45,7 @@
 		<!--- Verify that the [NameSingularLowercase] creates successfully --->
 		<cfif [NameSingularLowercase].save()>
 			<cfset flashInsert(success="The [NameSingularLowercase] was created successfully.")>
-            <cfset redirectTo(action="index")>
+            <cfreturn redirectTo(action="index", delay=true)>
 		<!--- Otherwise --->
 		<cfelse>
 			<cfset flashInsert(error="There was an error creating the [NameSingularLowercase].")>
@@ -60,7 +60,7 @@
 		<!--- Verify that the [NameSingularLowercase] updates successfully --->
 		<cfif [NameSingularLowercase].update(params.[NameSingularLowercase])>
 			<cfset flashInsert(success="The [NameSingularLowercase] was updated successfully.")>	
-            <cfset redirectTo(action="index")>
+            <cfreturn redirectTo(action="index", delay=true)>
 		<!--- Otherwise --->
 		<cfelse>
 			<cfset flashInsert(error="There was an error updating the [NameSingularLowercase].")>
@@ -75,11 +75,11 @@
 		<!--- Verify that the [NameSingularLowercase] deletes successfully --->
 		<cfif [NameSingularLowercase].delete()>
 			<cfset flashInsert(success="The [NameSingularLowercase] was deleted successfully.")>	
-            <cfset redirectTo(action="index")>
+            <cfreturn redirectTo(action="index", delay=true)>
 		<!--- Otherwise --->
 		<cfelse>
 			<cfset flashInsert(error="There was an error deleting the [NameSingularLowercase].")>
-			<cfset redirectTo(action="index")>
+			<cfreturn redirectTo(action="index", delay=true)>
 		</cfif>
 	</cffunction>
 	
