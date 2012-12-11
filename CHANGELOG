@@ -1,3 +1,13 @@
+CHANGES 0.9:
+===========
+- Generate unit tests for models
+- Generate functional tests for controllers
+- Generate helper tests that check your application's test coverage
+- Added an option to overwrite existing files
+- Changed select box to checkboxes for more options
+- All redirectTo() methods are now called as a cfreturn for functional testing compatibility
+- Compatibility with 1.1.8 (Also tested with 1.2 preview)
+
 CHANGES 0.8.1:
 ===========
 - Fixed problem with the Type select box having two selected values by default

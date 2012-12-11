@@ -9,7 +9,8 @@
 		<cfargument name="name" type="string" required="true" hint="Name of the object to scaffold">
 		<cfargument name="type" type="string" required="true" default="everything" hint="Type of generation to execute, values are: everything, controller, model">
 		<cfargument name="template" type="string" required="true" default="default" hint="The template to use for generating the scaffolds.">
-		
+		<cfargument name="overwrite" type="boolean" required="true" default="0" hint="Whether to overwrite existing files.">
+
 		<cfset var loc = {}>
 		
 		<!--- Setup the information for the user --->
@@ -19,27 +20,29 @@
 		<cfset model(arguments.name)>
 		
 		<!--- Check which type of scaffold to execute --->
-		<cfif arguments.type IS "everything">
-			<!--- Create the model --->
-		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
+		<cfif ListFindNoCase(arguments.type, "view") gt 0>
 		    <!--- Create the views --->
-			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template) & "<br/>">
-			<!--- Create the controller --->
-		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
-		<cfelseif arguments.type IS "model_controller">
+			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
+		</cfif>
+		<cfif ListFindNoCase(arguments.type, "model") gt 0>
 			<!--- Create the model --->
-		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
-			<!--- Create the controller --->
-		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
-		<cfelseif arguments.type IS "view">
-		    <!--- Create the views --->
-			<cfset loc.message = loc.message & $generateViews(arguments.name, arguments.template) & "<br/>">
-		<cfelseif arguments.type IS "model">
-			<!--- Create the model --->
-		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template) & "<br/>">
-		<cfelseif arguments.type IS "controller">
+		    <cfset loc.message = loc.message & $generateModel(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
+		</cfif>
+		<cfif ListFindNoCase(arguments.type, "controller") gt 0>
 		    <!--- Create the controller --->
-		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template) & "<br/>">
+		    <cfset loc.message = loc.message & $generateController(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
+	    </cfif>
+	    <cfif ListFindNoCase(arguments.type, "modelTest") gt 0>
+	    	<!--- Create the model unit test --->
+	    	<cfset loc.message = loc.message & $generateModelTest(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
+	    </cfif>
+	    <cfif ListFindNoCase(arguments.type, "controllerTest") gt 0>
+	    	<!--- Create the controller functional test --->
+	    	<cfset loc.message = loc.message & $generateControllerTest(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
+	    </cfif>
+	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT (DirectoryExists(ExpandPath("tests/unit")) AND DirectoryExists(ExpandPath("tests/functional")))>
+	    	<!--- Copy the HasTests helper..  because it's helpful (on folder creation) --->
+	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template, arguments.overwrite) & "<br/>">
 	    </cfif>
 		<cfreturn loc.message>	    
 	</cffunction>
@@ -47,7 +50,8 @@
 	<cffunction name="$checkIfFileExists" access="public" returntype="boolean" hint="Checks if the desired object is already created" output="false">
 		<cfargument name="name" type="string" required="true" hint="Name of the file to search for">
 	    <cfargument name="type" type="string" required="true" hint="Type of file to look for (Model, View, Controller)">
-	    
+		<cfargument name="overwrite" type="boolean" required="true" hint="Whether to overwrite existing files.">
+
 	    <cfset var loc = {}>
 	 	
 	    <!--- Expand the target folder --->
@@ -61,14 +65,30 @@
 	        <cfcase value="Controller">
 	        	<cfset loc.targetFolderPath = expandPath("controllers/")>
 	        </cfcase>
+	        <cfcase value="ModelTest">
+	    		<cfset loc.targetFolderPath = expandPath("tests/unit/")>
+	        </cfcase>
+	        <cfcase value="ControllerTest">
+	    		<cfset loc.targetFolderPath = expandPath("tests/functional/")>
+	        </cfcase>
 	    </cfswitch>
 	    
 	    <!--- Find the names of all the files in the targeted folder --->
 	    <cfdirectory name="loc.files" action="list" directory="#loc.targetFolderPath#" type="file">
 	    
-	    <!--- Check if the desired file is already in the targeted folder --->
-		<cfif (ListFindNoCase("#arguments.name#.cfc", ValueList(loc.files.name)) GT 0 AND arguments.type NEQ "View") OR (DirectoryExists(loc.targetFolderPath) AND arguments.type IS "View")>
-	    	<cfset loc.wasFound = true>
+	    <!--- Check if the desired file is already in the targeted folder, or whether to overwrite --->
+		<cfif arguments.overwrite>
+			<cfset loc.wasFound = false>
+		<cfelseif arguments.type IS "Model" AND ListFindNoCase(ValueList(loc.files.name), "#arguments.name#.cfc") GT 0>
+			<cfset loc.wasFound = true>
+		<cfelseif arguments.type IS "View" AND DirectoryExists(loc.targetFolderPath)>	
+			<cfset loc.wasFound = true>
+		<cfelseif arguments.type IS "Controller" AND ListFindNoCase(ValueList(loc.files.name), "#pluralize(arguments.name)#.cfc") GT 0>
+			<cfset loc.wasFound = true>
+		<cfelseif arguments.type IS "ModelTest" AND ListFindNoCase(ValueList(loc.files.name), "#arguments.name#Test.cfc") GT 0>
+			<cfset loc.wasFound = true>
+		<cfelseif arguments.type IS "ControllerTest" AND ListFindNoCase(ValueList(loc.files.name), "#pluralize(arguments.name)#Test.cfc") GT 0>
+			<cfset loc.wasFound = true>
 	    <cfelse>
 	    	<cfset loc.wasFound = false>
 		</cfif>
@@ -93,12 +113,13 @@
 	            
 	            <!--- Read the template file --->
                 <cffile action="read" file="#loc.fromFolderPath#/model.cfm" variable="loc.file">
-	            
+
 	            <!--- Replace the placeholders with real data to the user 
 	    		<cfset loc.file = $replacePlaceHolders(loc.file, arguments.name)> --->
 	            
 	            <!--- Write the file in the corresponding folder --->
-	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(arguments.name)#.cfc" output="#loc.file#" mode="777"> 
+	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(arguments.name)#.cfc" output="#loc.file#" mode="777">
+
 	        </cfcase>
 	        
 	        <cfcase value="View">
@@ -165,6 +186,56 @@
 	            <cffile action="write" file="#loc.destinationFolderPath#/#capitalize(pluralize(arguments.name))#.cfc" output="#loc.file#" mode="777"> 
 	        </cfcase>
 	        
+	        <cfcase value="ModelTest">
+	            
+				<!--- Expand the from and destination folders --->
+	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/default/tests/modelTest.cfm")>
+	    		<!--- all tests sourced from the default template for now
+	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/#arguments.template#/tests/modelTest.cfm")> --->
+				<cfset loc.destinationFolderPath = expandPath("tests/unit")>
+				<cfset loc.destinationFilePath = loc.destinationFolderPath & "\#capitalize(arguments.name)#Test.cfc"> 
+	            
+	       		<!--- read the unit test template --->
+	       		<cffile action="read" file="#loc.sourceFilePath#" variable="loc.file">
+
+	       		<!--- Replace the placeholders with real data to the user --->
+	            <cfset loc.file = $replacePlaceHolders(loc.file, arguments.name)>
+	            
+	       		<!--- Create the directory to store the test in --->
+	       		<cfif NOT directoryExists(loc.destinationFolderPath)>
+	       			<cfdirectory action="create" directory="#loc.destinationFolderPath#" mode="777">
+	       		</cfif>
+
+	       		<!--- Write the file in the corresponding folder --->
+	       		<cffile action="write" file="#loc.destinationFilePath#" output="#loc.file#" mode="777"> 
+
+	        </cfcase>
+
+	        <cfcase value="ControllerTest">
+	            
+				<!--- Expand the from and destination folders --->
+	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/default/tests/controllerTest.cfm")>
+	    		<!--- all tests sourced from the default template for now
+	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/#arguments.template#/tests/controllerTest.cfm")> --->
+				<cfset loc.destinationFolderPath = expandPath("tests/functional")>
+				<cfset loc.destinationFilePath = loc.destinationFolderPath & "\#capitalize(pluralize(arguments.name))#Test.cfc"> 
+	            
+	       		<!--- read the unit test template --->
+	       		<cffile action="read" file="#loc.sourceFilePath#" variable="loc.file">
+
+	       		<!--- Replace the placeholders with real data to the user --->
+	            <cfset loc.file = $replacePlaceHolders(loc.file, arguments.name)>
+	            
+	       		<!--- Create the directory to store the test in --->
+	       		<cfif NOT directoryExists(loc.destinationFolderPath)>
+	       			<cfdirectory action="create" directory="#loc.destinationFolderPath#" mode="777">
+	       		</cfif>
+
+	       		<!--- Write the file in the corresponding folder --->
+	       		<cffile action="write" file="#loc.destinationFilePath#" output="#loc.file#" mode="777"> 
+
+	        </cfcase>
+
 	        <cfdefaultcase>
 	        	<!--- Display a nice Wheels error? --->
 	        </cfdefaultcase>
@@ -181,6 +252,8 @@
 	    <!--- Find all occurences of [NamePluralLowercaseDeHumanized] and replace it --->
 	    <cfset loc.replacedContent = ReplaceNoCase(arguments.content, "[NamePluralLowercaseDeHumanized]", LCase($replaceUppercaseWithDash(pluralize(arguments.value))), "All")>
 	    <!--- Find all occurences of [NamePluralLowercase] and replace it --->
+	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[NamePluralUppercase]", capitalize(pluralize(arguments.value)), "All")>
+	    <!--- Find all occurences of [NamePluralLowercase] and replace it --->
 	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[NamePluralLowercase]", LCase(pluralize(arguments.value)), "All")>
 	    <!--- Find all occurences of [NameSingularUppercase] and replace it --->
 	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[NameSingularUppercase]", capitalize(arguments.value), "All")>
@@ -188,7 +261,11 @@
 	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[NameSingularLowercase]", LCase(arguments.value), "All")>
 	    <!--- Find all occurences of [PrimaryKey] and replace it with the actual primary key(s) --->
 	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[PrimaryKey]", model(LCase(arguments.value)).primaryKey(), "All")>
-	    
+	    <!--- Find all occurences of [validModelProperties] and replace it --->
+	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[validModelProperties]", $generateValidModelProperties(arguments.value))>
+	    <!--- Find all occurences of [invalidModelProperties] and replace it --->
+	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[invalidModelProperties]", $generateInvalidModelProperties(arguments.value))>
+
 	    <cfreturn loc.replacedContent>
 	    
 	</cffunction>
@@ -389,10 +466,12 @@
 	<cffunction name="$generateModel" access="public" returnType="string" hint="Creates a Model for the name of the argument passed" output="false">
 		<cfargument name="name" type="string" required="true" hint="Name of the object">
 		<cfargument name="template" type="string" required="true" default="default">
+		<cfargument name="overwrite" type="boolean" required="true" default="0">
+
 		<cfset var loc = {}>
 		
 		<!--- Check that the file has not been already created --->
-		<cfif $checkIfFileExists(arguments.name, "Model")>
+		<cfif $checkIfFileExists(arguments.name, "Model", arguments.overwrite)>
 		    <cfset loc.message = "File 'models/#capitalize(arguments.name)#.cfc' already exists so skipped.">
 		<cfelse>
 			<cfset $moveFileToFolder(arguments.name, "Model", arguments.template)>
@@ -405,15 +484,16 @@
 	<cffunction name="$generateViews" access="public" returnType="string" hint="Creates the 'index,show,new and edit' Views for the name of the argument passed" output="false">
 		<cfargument name="name" type="string" required="true" hint="Name of the object">
 		<cfargument name="template" type="string" required="true" default="default">
+		<cfargument name="overwrite" type="boolean" required="true" default="0">
 		    
 		<cfset var loc = {}>
 		
 		<!--- Check that the folder to store the views has not been already created --->
-		<cfif $checkIfFileExists(arguments.name, "View")>
+		<cfif $checkIfFileExists(arguments.name, "View", arguments.overwrite)>
 		    <cfset loc.message = "Folder 'views/#LCase(pluralize(arguments.name))#/' already exists so skipped.">  
 		<cfelse>
 			<cfset $moveFileToFolder(arguments.name, "View", arguments.template)>
-			<cfset loc.message = "Folder 'views/#LCase(pluralize(arguments.name))#/' created.">		
+			<cfset loc.message = "Folder 'views/#LCase(pluralize(arguments.name))#/' and view files created.">		
 		</cfif>
 		
 		<cfreturn loc.message>
@@ -422,11 +502,12 @@
 	<cffunction name="$generateController" access="public" returnType="string" hint="Creates a Controller for the name of the argument passed" output="false">
 		<cfargument name="name" type="string" required="true" hint="Name of the object">
 		<cfargument name="template" type="string" required="true" default="default">
+		<cfargument name="overwrite" type="boolean" required="true" default="0">
 		    
 		<cfset var loc = {}>
 		
 		<!--- Check that the file has not been already created --->
-		<cfif $checkIfFileExists(arguments.name, "Controller")>
+		<cfif $checkIfFileExists(arguments.name, "Controller", arguments.overwrite)>
 		    <cfset loc.message = "File 'controllers/#capitalize(pluralize(arguments.name))#.cfc' already exists so skipped.">
 		<cfelse>
 			<cfset $moveFileToFolder(arguments.name, "Controller", arguments.template)>
@@ -436,6 +517,167 @@
 		<cfreturn loc.message>
 	</cffunction>
 	
+	<cffunction name="$generateModelTest" access="public" returnType="string" hint="Creates Model unit tests for the name of the argument passed" output="false">
+		<cfargument name="name" type="string" required="true" hint="Name of the object">
+		<cfargument name="template" type="string" required="true" default="default">
+		<cfargument name="overwrite" type="boolean" required="true" default="0">
+
+		<cfset var loc = {}>
+		
+		<cfset loc.file = "tests/unit/#capitalize(arguments.name)#Test.cfc">
+
+		<!--- Check that the file has not been already created --->
+		<cfif $checkIfFileExists(arguments.name, "ModelTest", arguments.overwrite)>
+		    <cfset loc.message = "File '#loc.file#' already exists so skipped.">
+		<cfelse>
+			<cfset $moveFileToFolder(arguments.name, "ModelTest", arguments.template)>
+		    <cfset loc.message = "File '#loc.file#' created.">
+		</cfif>
+		
+		<cfreturn loc.message>
+	</cffunction>
+
+	<cffunction name="$generateControllerTest" access="public" returnType="string" hint="Creates controller functional tests for the name of the argument passed" output="false">
+		<cfargument name="name" type="string" required="true" hint="Name of the object">
+		<cfargument name="template" type="string" required="true" default="default">
+		<cfargument name="overwrite" type="boolean" required="true" default="0">
+
+		<cfset var loc = {}>
+		
+		<cfset loc.file = "tests/functional/#capitalize(pluralize(arguments.name))#Test.cfc">
+
+		<!--- Check that the file has not been already created --->
+		<cfif $checkIfFileExists(arguments.name, "ControllerTest", arguments.overwrite)>
+		    <cfset loc.message = "File '#loc.file#' already exists so skipped.">
+		<cfelse>
+			<cfset $moveFileToFolder(arguments.name, "ControllerTest", arguments.template)>
+		    <cfset loc.message = "File '#loc.file#' created.">
+		</cfif>
+
+		<cfreturn loc.message>
+	</cffunction>
+
+	<cffunction name="$generateValidModelProperties" access="public" returnType="string" hint="Generates a string of invalid name/value pairs from a Model by reading the table schema" output="false">
+		<cfargument name="name" type="string" required="true" hint="Name of the model to generator the form for">
+		
+		<cfset var loc = {}>
+		
+		<!--- helpers --->
+		<cfset loc.delim = "," & chr(13) & chr(10) & repeatString(chr(9), 3)>
+
+		<!--- Define the name of the object returned from the controller --->
+		<cfset loc.nameInSingularLowercase = LCase(arguments.name)>
+		<cfset loc.nameInPluralLowercase = LCase(pluralize(arguments.name))>
+		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
+		
+		<!--- Introspect the table to find the column names and types --->		
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
+		<cfset loc.columnsInOrder = loc.columns.columnList>
+
+		<!--- define return value --->
+		<cfset loc.properties = "">
+		
+		<cfloop list="#loc.columnsInOrder#" index="loc.property">
+
+			<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
+				
+				<cfswitch expression="#loc.columns.properties[loc.property].TYPE#">
+					<cfcase value="cf_sql_bit,cf_sql_tinyint,cf_sql_integer,cf_sql_bigint,cf_sql_smallint" delimiters=",">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#=1", "|")>
+					</cfcase>
+
+					<cfcase value="cf_sql_date,cf_sql_time,cf_sql_timestamp">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#=createDateTime(2000,1,1,0,0,0)", "|")>
+					</cfcase>
+
+					<cfcase value="cf_sql_decimal,cf_sql_double,cf_sql_float,cf_sql_money,cf_sql_money4,cf_sql_numeric">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#=1.00", "|")>
+					</cfcase>
+
+					<cfdefaultcase>
+						<!--- Return a string if everything fails --->
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='#Left(loc.property & "_string",loc.columns.properties[loc.property].SIZE)#'", "|")>
+					</cfdefaultcase>
+				</cfswitch>
+
+			</cfif>
+		</cfloop>
+		
+		<cfset loc.properties = Replace(loc.properties, "|", loc.delim ,"all")>
+
+		<cfreturn loc.properties>
+	</cffunction>
+
+	<!--- TODO: refactor this.. its almost a duplicate of $generateValidModelProperties, the only diff is the values that get written in the switch/case --->
+	<cffunction name="$generateInvalidModelProperties" access="public" returnType="string" hint="Generates a string of invalid name/value pairs from a Model by reading the table schema" output="false">
+		<cfargument name="name" type="string" required="true" hint="Name of the model to generator the form for">
+		
+		<cfset var loc = {}>
+		
+		<!--- helpers --->
+		<cfset loc.delim = "," & chr(13) & chr(10) & repeatString(chr(9), 3)>
+
+		<!--- Define the name of the object returned from the controller --->
+		<cfset loc.nameInSingularLowercase = LCase(arguments.name)>
+		<cfset loc.nameInPluralLowercase = LCase(pluralize(arguments.name))>
+		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
+		
+		<!--- Introspect the table to find the column names and types --->		
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
+		<cfset loc.columnsInOrder = loc.columns.columnList>
+
+		<!--- define return value --->
+		<cfset loc.properties = "">
+		
+		<cfloop list="#loc.columnsInOrder#" index="loc.property">
+
+			<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
+				
+				<cfswitch expression="#loc.columns.properties[loc.property].TYPE#">
+					<cfcase value="cf_sql_bit,cf_sql_tinyint,cf_sql_integer,cf_sql_bigint,cf_sql_smallint" delimiters=",">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='abcd'", "|")>
+					</cfcase>
+
+					<cfcase value="cf_sql_date,cf_sql_time,cf_sql_timestamp">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='efgh'", "|")>
+					</cfcase>
+
+					<cfcase value="cf_sql_decimal,cf_sql_double,cf_sql_float,cf_sql_money,cf_sql_money4,cf_sql_numeric">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='hijk", "|")>
+					</cfcase>
+
+					<cfdefaultcase>
+						<!--- Return a string if everything fails --->
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='#RepeatString("x", loc.columns.properties[loc.property].SIZE + 1)#'", "|")>
+					</cfdefaultcase>
+				</cfswitch>
+
+			</cfif>
+		</cfloop>
+		
+		<cfset loc.properties = Replace(loc.properties, "|", loc.delim ,"all")>
+
+		<cfreturn loc.properties>
+	</cffunction>
+
+	<cffunction name="$copyHasTests" access="public" returnType="string" hint="Copies the HasTests.cfc" output="false">
+	    <cfargument name="template" type="string" required="true" default="default">
+
+	    <cfset var loc = {}>
+
+    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")>
+    	<cfset loc.destinationPath = ExpandPath("tests/HasTests.cfc")>
+    	
+    	<cfif NOT FileExists(loc.sourcePath)>
+    		<cfset loc.message = "File '#tests/HasTests.cfc#' already exists so skipped.">
+    	<cfelse>
+    		<cffile action="copy" source="#loc.sourcePath#" destination="#loc.destinationPath#" mode="777">
+    		<cfset loc.message = "File 'tests/HasTests.cfc' created.<br/>">
+    	</cfif>
+    	
+		<cfreturn loc.message>
+	</cffunction>
+
 	<cffunction name="$generateRoutes" access="public" returnType="string" hint="Creates all the routes for the name of the argument passed" output="false">
 		<cfargument name="name" type="string" required="true" hint="Name of the object">
 		
