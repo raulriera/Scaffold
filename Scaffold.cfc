@@ -40,7 +40,7 @@
 	    	<!--- Create the controller functional test --->
 	    	<cfset loc.message = loc.message & $generateControllerTest(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
 	    </cfif>
-	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT (DirectoryExists(ExpandPath("tests/unit")) AND DirectoryExists(ExpandPath("tests/functional")))>
+	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT DirectoryExists(ExpandPath("tests/unit")) AND NOT DirectoryExists(ExpandPath("tests/functional"))>
 	    	<!--- Copy the HasTests helper..  because it's helpful (on folder creation) --->
 	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template, arguments.overwrite) & "<br/>">
 	    </cfif>
