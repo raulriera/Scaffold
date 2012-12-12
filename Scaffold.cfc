@@ -643,7 +643,7 @@
 					</cfcase>
 
 					<cfcase value="cf_sql_decimal,cf_sql_double,cf_sql_float,cf_sql_money,cf_sql_money4,cf_sql_numeric">
-						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='hijk", "|")>
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='hijk'", "|")>
 					</cfcase>
 
 					<cfdefaultcase>
