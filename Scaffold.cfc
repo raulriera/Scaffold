@@ -42,7 +42,11 @@
 	    </cfif>
 	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT DirectoryExists(ExpandPath("tests/unit")) AND NOT DirectoryExists(ExpandPath("tests/functional"))>
 	    	<!--- Copy the HasTests helper..  because it's helpful (on folder creation) --->
-	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template, arguments.overwrite) & "<br/>">
+	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template) & "<br/>">
+	    </cfif>
+		<cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT FileExists(ExpandPath("tests/helpers.cfm"))>
+	    	<!--- Copy the helpers.cfm --->
+	    	<cfset loc.message = loc.message & $copyHelpers(arguments.template) & "<br/>">
 	    </cfif>
 		<cfreturn loc.message>	    
 	</cffunction>
@@ -665,14 +669,36 @@
 
 	    <cfset var loc = {}>
 
-    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")>
+    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/default/tests/HasTests.cfc")>
+    	<!--- all tests sourced from the default template for now
+    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")> --->
     	<cfset loc.destinationPath = ExpandPath("tests/HasTests.cfc")>
     	
-    	<cfif NOT FileExists(loc.sourcePath)>
+    	<cfif FileExists(loc.destinationPath)>
     		<cfset loc.message = "File '#tests/HasTests.cfc#' already exists so skipped.">
     	<cfelse>
     		<cffile action="copy" source="#loc.sourcePath#" destination="#loc.destinationPath#" mode="777">
     		<cfset loc.message = "File 'tests/HasTests.cfc' created.<br/>">
+    	</cfif>
+    	
+		<cfreturn loc.message>
+	</cffunction>
+
+	<cffunction name="$copyHelpers" access="public" returnType="string" hint="Copies the helpers.cfm" output="false">
+	    <cfargument name="template" type="string" required="true" default="default">
+
+	    <cfset var loc = {}>
+
+	    <cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/default/tests/helpers.cfm")>
+	    <!--- all tests sourced from the default template for now
+	    <cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")> --->
+    	<cfset loc.destinationPath = ExpandPath("tests/helpers.cfm")>
+    	
+    	<cfif FileExists(loc.destinationPath)>
+    		<cfset loc.message = "File 'tests/helpers.cfm' already exists so skipped.">
+    	<cfelse>
+    		<cffile action="copy" source="#loc.sourcePath#" destination="#loc.destinationPath#" mode="777">
+    		<cfset loc.message = "File 'tests/helpers.cfm' created.<br/>">
     	</cfif>
     	
 		<cfreturn loc.message>
