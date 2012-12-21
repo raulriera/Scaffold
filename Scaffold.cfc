@@ -649,7 +649,11 @@
 					<cfcase value="cf_sql_decimal,cf_sql_double,cf_sql_float,cf_sql_money,cf_sql_money4,cf_sql_numeric">
 						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='hijk'", "|")>
 					</cfcase>
-
+					
+					<cfcase value="cf_sql_longvarchar">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#=''", "|")>
+					</cfcase>
+					
 					<cfdefaultcase>
 						<!--- Return a string if everything fails --->
 						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='#RepeatString("x", loc.columns.properties[loc.property].SIZE + 1)#'", "|")>
