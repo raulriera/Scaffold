@@ -7,7 +7,7 @@
 </cfoutput>
 
 <cftable query="[NamePluralLowercase]" colHeaders="true" HTMLTable="true">
-	LISTINGCOLUMNS
+	[INDEXLISTINGCOLUMNS]
 	<cfcol header="" text="#linkTo(text='Show', action='show', key=[PrimaryKey])#" />
 	<cfcol header="" text="#linkTo(text='Edit', action='edit', key=[PrimaryKey])#" />
 	<cfcol header="" text="#linkTo(text='Delete', action='delete', key=[PrimaryKey], confirm='Are you sure?')#" />
