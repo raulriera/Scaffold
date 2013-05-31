@@ -42,7 +42,11 @@
 	    </cfif>
 	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT DirectoryExists(ExpandPath("tests/unit")) AND NOT DirectoryExists(ExpandPath("tests/functional"))>
 	    	<!--- Copy the HasTests helper..  because it's helpful (on folder creation) --->
-	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template, arguments.overwrite) & "<br/>">
+	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template) & "<br/>">
+	    </cfif>
+		<cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT FileExists(ExpandPath("tests/helpers.cfm"))>
+	    	<!--- Copy the helpers.cfm --->
+	    	<cfset loc.message = loc.message & $copyHelpers(arguments.template) & "<br/>">
 	    </cfif>
 		<cfreturn loc.message>	    
 	</cffunction>
@@ -133,42 +137,28 @@
 	            	<cfdirectory action="create" directory="#loc.destinationFolderPath#" mode="777">
 	            </cfif>
 	            
-	            <!--- Read the template files --->
-	            <cffile action="read" file="#loc.fromFolderPath#/index.cfm" variable="loc.fileIndex">
-	            <cffile action="read" file="#loc.fromFolderPath#/show.cfm" variable="loc.fileShow">
-	            <cffile action="read" file="#loc.fromFolderPath#/new.cfm" variable="loc.fileNew">
-	            <cffile action="read" file="#loc.fromFolderPath#/edit.cfm" variable="loc.fileEdit">
-	            <cffile action="read" file="#loc.fromFolderPath#/_showFlash.cfm" variable="loc.fileShowFlash">
-	            
+	            <!--- list the files in the template views folder --->
+	            <cfdirectory action="list" directory="#loc.fromFolderPath#" name="loc.templateViewFiles">
+
 	            <!--- Generate the forms and listing for the views --->
 	            <cfset loc.entryForm = $generateEntryFormFromModel(arguments.name)>
 	            <cfset loc.editForm = $generateEditFormFromModel(arguments.name)>
 	            <cfset loc.indexListing = $generateListingViewFromModel(arguments.name)>
 	            <cfset loc.showListing = $generateShowViewFromModel(arguments.name)>
-	            
-				<!--- Replace the placeholders names --->
-	    		<cfset loc.fileIndex = $replacePlaceHolders(loc.fileIndex, arguments.name)>
-	            <cfset loc.fileShow = $replacePlaceHolders(loc.fileShow, arguments.name)>
-	            <cfset loc.fileNew = $replacePlaceHolders(loc.fileNew, arguments.name)>
-	            <cfset loc.fileEdit = $replacePlaceHolders(loc.fileEdit, arguments.name)>
-	            
-	            <!--- Replace the placeholder forms --->
-	            <cfset loc.fileNew = ReplaceNoCase(loc.fileNew, "ENTRYFORM", loc.entryForm)>
-	            <cfset loc.fileEdit = ReplaceNoCase(loc.fileEdit, "EDITFORM", loc.editForm)>
-	                      
-	            <!--- Replace the placeholder listing --->
-	            <cfset loc.fileIndex = ReplaceNoCase(loc.fileIndex, "LISTINGCOLUMNS", loc.indexListing)>
-	            
-	            <!--- Replace the placeholder show --->
-	            <cfset loc.fileShow = ReplaceNoCase(loc.fileShow, "LISTINGCOLUMNS", loc.showListing)>
-	                        
-	            <!--- Write the file in the corresponding folder --->
-	            <cffile action="write" file="#loc.destinationFolderPath#/index.cfm" output="#loc.fileIndex#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/show.cfm" output="#loc.fileShow#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/new.cfm" output="#loc.fileNew#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/edit.cfm" output="#loc.fileEdit#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/_showFlash.cfm" output="#loc.fileShowFlash#" mode="777"> 
-	            
+
+	            <cfloop query="loc.templateViewFiles">
+	            	<cffile action="read" file="#loc.templateViewFiles.directory#/#loc.templateViewFiles.name#" variable="loc.viewFile">
+	            	<!--- Replace the placeholders --->
+	            	<cfset loc.viewFile = $replacePlaceHolders(loc.viewFile, arguments.name)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[ENTRYFORM]", loc.entryForm)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[EDITFORM]", loc.editForm)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[SHOWLISTINGCOLUMNS]", loc.showListing)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[INDEXLISTINGCOLUMNS]", loc.indexListing)>
+
+	            	<!--- Write the file in the corresponding folder --->
+	            	<cffile action="write" file="#loc.destinationFolderPath#/#loc.templateViewFiles.name#" output="#loc.viewFile#" mode="777"> 
+	            </cfloop>
+
 	        </cfcase>
 	        
 	        <cfcase value="Controller">
@@ -643,9 +633,13 @@
 					</cfcase>
 
 					<cfcase value="cf_sql_decimal,cf_sql_double,cf_sql_float,cf_sql_money,cf_sql_money4,cf_sql_numeric">
-						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='hijk", "|")>
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='hijk'", "|")>
 					</cfcase>
-
+					
+					<cfcase value="cf_sql_longvarchar">
+						<cfset loc.properties = listAppend(loc.properties, "#loc.property#=''", "|")>
+					</cfcase>
+					
 					<cfdefaultcase>
 						<!--- Return a string if everything fails --->
 						<cfset loc.properties = listAppend(loc.properties, "#loc.property#='#RepeatString("x", loc.columns.properties[loc.property].SIZE + 1)#'", "|")>
@@ -665,14 +659,36 @@
 
 	    <cfset var loc = {}>
 
-    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")>
+    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/default/tests/HasTests.cfc")>
+    	<!--- all tests sourced from the default template for now
+    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")> --->
     	<cfset loc.destinationPath = ExpandPath("tests/HasTests.cfc")>
     	
-    	<cfif NOT FileExists(loc.sourcePath)>
+    	<cfif FileExists(loc.destinationPath)>
     		<cfset loc.message = "File '#tests/HasTests.cfc#' already exists so skipped.">
     	<cfelse>
     		<cffile action="copy" source="#loc.sourcePath#" destination="#loc.destinationPath#" mode="777">
     		<cfset loc.message = "File 'tests/HasTests.cfc' created.<br/>">
+    	</cfif>
+    	
+		<cfreturn loc.message>
+	</cffunction>
+
+	<cffunction name="$copyHelpers" access="public" returnType="string" hint="Copies the helpers.cfm" output="false">
+	    <cfargument name="template" type="string" required="true" default="default">
+
+	    <cfset var loc = {}>
+
+	    <cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/default/tests/helpers.cfm")>
+	    <!--- all tests sourced from the default template for now
+	    <cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")> --->
+    	<cfset loc.destinationPath = ExpandPath("tests/helpers.cfm")>
+    	
+    	<cfif FileExists(loc.destinationPath)>
+    		<cfset loc.message = "File 'tests/helpers.cfm' already exists so skipped.">
+    	<cfelse>
+    		<cffile action="copy" source="#loc.sourcePath#" destination="#loc.destinationPath#" mode="777">
+    		<cfset loc.message = "File 'tests/helpers.cfm' created.<br/>">
     	</cfif>
     	
 		<cfreturn loc.message>

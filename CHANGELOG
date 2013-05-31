@@ -1,12 +1,14 @@
 CHANGES 0.9:
 ===========
-- Generate unit tests for models
-- Generate functional tests for controllers
-- Generate helper tests that check your application's test coverage
-- Added an option to overwrite existing files
-- Changed select box to checkboxes for more options
-- All redirectTo() methods are now called as a cfreturn for functional testing compatibility
-- Compatibility with 1.1.8 (Also tested with 1.2 preview)
+- Generate unit tests for models (by chapmandu)
+- Generate functional tests for controllers (by chapmandu)
+- Generate helper tests that check your application's test coverage (by chapmandu)
+- Added an option to overwrite existing files (by chapmandu)
+- Changed select box to checkboxes for more options (by chapmandu)
+- All redirectTo() methods are now called as a cfreturn for functional testing compatibility (by chapmandu)
+- Compatibility with 1.1.8 (Also tested with 1.2 preview) (by chapmandu)
+- Allow view templates to have any name, to enable partials (by chapmandu)
+- all placeholders now consistently use [square brackets]
 
 CHANGES 0.8.1:
 ===========

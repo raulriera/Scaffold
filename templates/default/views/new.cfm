@@ -3,7 +3,7 @@
 <cfoutput>#includePartial("showFlash")#</cfoutput>
 
 <cfoutput>
-ENTRYFORM
+[ENTRYFORM]
 
 #linkTo(text="Return to the listing", action="index")#
 </cfoutput>
