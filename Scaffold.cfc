@@ -137,42 +137,28 @@
 	            	<cfdirectory action="create" directory="#loc.destinationFolderPath#" mode="777">
 	            </cfif>
 	            
-	            <!--- Read the template files --->
-	            <cffile action="read" file="#loc.fromFolderPath#/index.cfm" variable="loc.fileIndex">
-	            <cffile action="read" file="#loc.fromFolderPath#/show.cfm" variable="loc.fileShow">
-	            <cffile action="read" file="#loc.fromFolderPath#/new.cfm" variable="loc.fileNew">
-	            <cffile action="read" file="#loc.fromFolderPath#/edit.cfm" variable="loc.fileEdit">
-	            <cffile action="read" file="#loc.fromFolderPath#/_showFlash.cfm" variable="loc.fileShowFlash">
-	            
+	            <!--- list the files in the template views folder --->
+	            <cfdirectory action="list" directory="#loc.fromFolderPath#" name="loc.templateViewFiles">
+
 	            <!--- Generate the forms and listing for the views --->
 	            <cfset loc.entryForm = $generateEntryFormFromModel(arguments.name)>
 	            <cfset loc.editForm = $generateEditFormFromModel(arguments.name)>
 	            <cfset loc.indexListing = $generateListingViewFromModel(arguments.name)>
 	            <cfset loc.showListing = $generateShowViewFromModel(arguments.name)>
-	            
-				<!--- Replace the placeholders names --->
-	    		<cfset loc.fileIndex = $replacePlaceHolders(loc.fileIndex, arguments.name)>
-	            <cfset loc.fileShow = $replacePlaceHolders(loc.fileShow, arguments.name)>
-	            <cfset loc.fileNew = $replacePlaceHolders(loc.fileNew, arguments.name)>
-	            <cfset loc.fileEdit = $replacePlaceHolders(loc.fileEdit, arguments.name)>
-	            
-	            <!--- Replace the placeholder forms --->
-	            <cfset loc.fileNew = ReplaceNoCase(loc.fileNew, "ENTRYFORM", loc.entryForm)>
-	            <cfset loc.fileEdit = ReplaceNoCase(loc.fileEdit, "EDITFORM", loc.editForm)>
-	                      
-	            <!--- Replace the placeholder listing --->
-	            <cfset loc.fileIndex = ReplaceNoCase(loc.fileIndex, "LISTINGCOLUMNS", loc.indexListing)>
-	            
-	            <!--- Replace the placeholder show --->
-	            <cfset loc.fileShow = ReplaceNoCase(loc.fileShow, "LISTINGCOLUMNS", loc.showListing)>
-	                        
-	            <!--- Write the file in the corresponding folder --->
-	            <cffile action="write" file="#loc.destinationFolderPath#/index.cfm" output="#loc.fileIndex#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/show.cfm" output="#loc.fileShow#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/new.cfm" output="#loc.fileNew#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/edit.cfm" output="#loc.fileEdit#" mode="777"> 
-	            <cffile action="write" file="#loc.destinationFolderPath#/_showFlash.cfm" output="#loc.fileShowFlash#" mode="777"> 
-	            
+
+	            <cfloop query="loc.templateViewFiles">
+	            	<cffile action="read" file="#loc.templateViewFiles.directory#/#loc.templateViewFiles.name#" variable="loc.viewFile">
+	            	<!--- Replace the placeholders --->
+	            	<cfset loc.viewFile = $replacePlaceHolders(loc.viewFile, arguments.name)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[ENTRYFORM]", loc.entryForm)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[EDITFORM]", loc.editForm)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[SHOWLISTINGCOLUMNS]", loc.showListing)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[INDEXLISTINGCOLUMNS]", loc.indexListing)>
+
+	            	<!--- Write the file in the corresponding folder --->
+	            	<cffile action="write" file="#loc.destinationFolderPath#/#loc.templateViewFiles.name#" output="#loc.viewFile#" mode="777"> 
+	            </cfloop>
+
 	        </cfcase>
 	        
 	        <cfcase value="Controller">
