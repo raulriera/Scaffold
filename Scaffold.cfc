@@ -145,6 +145,7 @@
 	            <cfset loc.editForm = $generateEditFormFromModel(arguments.name)>
 	            <cfset loc.indexListing = $generateListingViewFromModel(arguments.name)>
 	            <cfset loc.showListing = $generateShowViewFromModel(arguments.name)>
+	            <cfset loc.formFields = $generateFormFieldsFromModel(arguments.name)>
 
 	            <cfloop query="loc.templateViewFiles">
 	            	<cffile action="read" file="#loc.templateViewFiles.directory#/#loc.templateViewFiles.name#" variable="loc.viewFile">
@@ -154,6 +155,7 @@
 	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[EDITFORM]", loc.editForm)>
 	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[SHOWLISTINGCOLUMNS]", loc.showListing)>
 	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[INDEXLISTINGCOLUMNS]", loc.indexListing)>
+	            	<cfset loc.viewFile = ReplaceNoCase(loc.viewFile, "[FORMFIELDS]", loc.formFields)>
 
 	            	<!--- Write the file in the corresponding folder --->
 	            	<cffile action="write" file="#loc.destinationFolderPath#/#loc.templateViewFiles.name#" output="#loc.viewFile#" mode="777"> 
@@ -255,6 +257,8 @@
 	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[validModelProperties]", $generateValidModelProperties(arguments.value))>
 	    <!--- Find all occurences of [invalidModelProperties] and replace it --->
 	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[invalidModelProperties]", $generateInvalidModelProperties(arguments.value))>
+	    <!--- Find all occurences of [formFields] and replace it --->
+	    <cfset loc.replacedContent = ReplaceNoCase(loc.replacedContent, "[formFields]", $generateFormFieldsFromModel(arguments.value))>
 
 	    <cfreturn loc.replacedContent>
 	    
@@ -267,12 +271,6 @@
 		
 		<!--- Define the name of the object returned from the controller --->
 		<cfset loc.nameInSingularLowercase = LCase(arguments.name)>
-		<cfset loc.nameInPluralLowercase = LCase(pluralize(arguments.name))>
-		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
-		
-		<!--- Introspect the table to find the column names and types --->		
-		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
-		<cfset loc.columnsInOrder = loc.columns.columnList>
 
 		<cfprocessingdirective suppressWhiteSpace="true">
 		<cfsavecontent variable="loc.form">
@@ -282,11 +280,7 @@
 	
 			[startFormTag(action="create")]
 		
-				<cfloop list="#loc.columnsInOrder#" index="loc.property">
-					<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
-						[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]
-					</cfif>											
-				</cfloop>
+				[includePartial("fields")]
 
 				[submitTag()]
 				
@@ -294,10 +288,6 @@
 			</cfoutput>
 		</cfsavecontent>
 		</cfprocessingdirective>
-		
-		<!--- Replace the HTML comments with ColdFusion comments --->
-		<cfset loc.form = Replace(loc.form, "<!--", "<!---", "All")>
-		<cfset loc.form = Replace(loc.form, "-->", "--->", "All")>
 		
 		<!--- Replace the brackets with number signs --->
 		<cfset loc.form = Replace(loc.form, "[", "##", "All")>
@@ -313,12 +303,6 @@
 		
 		<!--- Define the name of the object returned from the controller --->
 		<cfset loc.nameInSingularLowercase = LCase(arguments.name)>
-		<cfset loc.nameInPluralLowercase = LCase(pluralize(arguments.name))>
-		<cfset loc.nameInPluralUppercase = capitalize(pluralize(arguments.name))>
-		
-		<!--- Introspect the table to find the column names and types --->		
-		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
-		<cfset loc.columnsInOrder = loc.columns.columnList>
 		
 		<cfprocessingdirective suppressWhiteSpace="true">
 		<cfsavecontent variable="loc.form">
@@ -327,11 +311,7 @@
 	
 			[startFormTag(action="update", key=params.key)]
 		
-				<cfloop list="#loc.columnsInOrder#" index="loc.property">
-					<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
-						[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]
-					</cfif>										
-				</cfloop>
+				[includePartial("fields")]
 				
 				[submitTag()]
 				
@@ -340,10 +320,6 @@
 		</cfsavecontent>
 		</cfprocessingdirective>
 		
-		<!--- Replace the HTML comments with ColdFusion comments --->
-		<cfset loc.form = Replace(loc.form, "<!--", "<!---", "All")>
-		<cfset loc.form = Replace(loc.form, "-->", "--->", "All")>
-		
 		<!--- Replace the brackets with number signs --->
 		<cfset loc.form = Replace(loc.form, "[", "##", "All")>
 		<cfset loc.form = Replace(loc.form, "]", "##", "All")>
@@ -351,6 +327,35 @@
 		<cfreturn loc.form>
 	</cffunction>
 	
+	<cffunction name="$generateFormFieldsFromModel" access="public" returnType="string" hint="Generates form fields from a Model by reading the table schema" output="false">
+		<cfargument name="name" type="string" required="true" hint="Name of the model to generator the fields for">
+		
+		<cfset var loc = {}>
+		
+		<!--- Define the name of the object returned from the controller --->
+		<cfset loc.nameInSingularLowercase = LCase(arguments.name)>
+		
+		<!--- Introspect the table to find the column names and types --->		
+		<cfset loc.columns = model(loc.nameInSingularLowercase).$classData()>
+		<cfset loc.columnsInOrder = loc.columns.columnList>
+		
+		<cfset loc.fields = ""> 
+		<cfloop list="#loc.columnsInOrder#" index="loc.property">
+			<cfif ListFindNoCase(model(loc.nameInSingularLowercase).primaryKey(), loc.columns.properties[loc.property].COLUMN) IS 0 AND loc.columns.properties[loc.property].COLUMN IS NOT "createdAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "updatedAt" AND loc.columns.properties[loc.property].COLUMN IS NOT "deletedAt">
+				<cfset loc.fields = ListAppend(loc.fields, "[#$generateFormField(loc.nameInSingularLowercase, loc.columns.properties[loc.property])#]", "|")>
+			</cfif>										
+		</cfloop>
+
+		<!--- Replace the pipes with crlf --->
+		<cfset loc.fields = Replace(loc.fields, "|", Chr(13) & Chr(10), "All")>
+
+		<!--- Replace the brackets with number signs --->
+		<cfset loc.fields = Replace(loc.fields, "[", "##", "All")>
+		<cfset loc.fields = Replace(loc.fields, "]", "##", "All")>
+
+		<cfreturn loc.fields>
+	</cffunction>
+
 	<cffunction name="$generateFormField" access="public" returnType="string" hint="Generates a form field using Wheel's view helpers" output="false">
 		<cfargument name="objectName" type="string" required="true" hint="Name of the object which holds the property">
 		<cfargument name="columnObject" type="struct" required="true" hint="Struct of the database column">

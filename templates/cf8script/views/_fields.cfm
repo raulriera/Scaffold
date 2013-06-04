@@ -1,0 +1,3 @@
+<cfoutput>
+	[FORMFIELDS]
+</cfoutput>
