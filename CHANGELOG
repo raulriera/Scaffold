@@ -8,7 +8,9 @@ CHANGES 0.9:
 - All redirectTo() methods are now called as a cfreturn for functional testing compatibility (by chapmandu)
 - Compatibility with 1.1.8 (Also tested with 1.2 preview) (by chapmandu)
 - Allow view templates to have any name, to enable partials (by chapmandu)
-- all placeholders now consistently use [square brackets]
+- All placeholders now consistently use [square brackets] (by chapmandu)
+- Separate form fields into a partial (by chapmandu)
+- Introduce [formFields] placeholder (by chapmandu)
 
 CHANGES 0.8.1:
 ===========
