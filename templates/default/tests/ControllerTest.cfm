@@ -3,7 +3,10 @@
     <!---
     # SETUP & TEARDOWN
     --->
-
+    
+    <!--- include helper functions --->
+    <cfinclude template="../helpers.cfm">
+    
     <!--- setup runs before every test --->
     <cffunction name="setup">
         <!--- save the orginal environment --->
