@@ -1,11 +1,14 @@
 <cfcomponent extends="wheelsMapping.Test">
        
+	<!--- include helper functions --->
+    <cfinclude template="../helpers.cfm">
+	
 	<!--- setup runs before every test --->
     <cffunction name="setup">
     	<!--- save the orginal environment --->
-		<cfset loc.originalApplication = Duplicate(application)>
-		<!--- set transaction mode to rollback, so no records are affected --->
-		<cfset application.wheels.transactionMode = "rollback">
+	<cfset loc.originalApplication = Duplicate(application)>
+	<!--- set transaction mode to rollback, so no records are affected --->
+	<cfset application.wheels.transactionMode = "rollback">
         <!--- create an instance of our [NameSingularUppercase] --->
         <cfset loc.[NameSingularLowercase] = model("[NameSingularUppercase]").new()>
         <!--- a struct used to set valid model property values --->
