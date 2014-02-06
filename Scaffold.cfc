@@ -40,7 +40,7 @@
 	    	<!--- Create the controller functional test --->
 	    	<cfset loc.message = loc.message & $generateControllerTest(arguments.name, arguments.template, arguments.overwrite) & "<br/>">
 	    </cfif>
-	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT DirectoryExists(ExpandPath("tests/unit")) AND NOT DirectoryExists(ExpandPath("tests/functional"))>
+	    <cfif (ListFindNoCase(arguments.type, "modelTest") gt 0 OR ListFindNoCase(arguments.type, "controllerTest") gt 0) AND NOT DirectoryExists(ExpandPath("tests/models")) AND NOT DirectoryExists(ExpandPath("tests/controllers"))>
 	    	<!--- Copy the HasTests helper..  because it's helpful (on folder creation) --->
 	    	<cfset loc.message = loc.message & $copyHasTests(arguments.template) & "<br/>">
 	    </cfif>
@@ -70,10 +70,10 @@
 	        	<cfset loc.targetFolderPath = expandPath("controllers/")>
 	        </cfcase>
 	        <cfcase value="ModelTest">
-	    		<cfset loc.targetFolderPath = expandPath("tests/unit/")>
+	    		<cfset loc.targetFolderPath = expandPath("tests/models/")>
 	        </cfcase>
 	        <cfcase value="ControllerTest">
-	    		<cfset loc.targetFolderPath = expandPath("tests/functional/")>
+	    		<cfset loc.targetFolderPath = expandPath("tests/controllers/")>
 	        </cfcase>
 	    </cfswitch>
 	    
@@ -180,11 +180,14 @@
 	        
 	        <cfcase value="ModelTest">
 	            
-				<!--- Expand the from and destination folders --->
-	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/default/tests/modelTest.cfm")>
-	    		<!--- all tests sourced from the default template for now
-	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/#arguments.template#/tests/modelTest.cfm")> --->
-				<cfset loc.destinationFolderPath = expandPath("tests/unit")>
+	    		<!--- Check for a custom model test file --->
+	    		<cfset loc.sourceFilePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/modelTest.cfm")>
+
+	    		<!--- if I can't find a custom model test, use the default --->
+	    		<cfif not FileExists(loc.sourceFilePath)>
+	    			<cfset loc.sourceFilePath = ExpandPath("plugins/scaffold/templates/default/tests/modelTest.cfm")>	
+	    		</cfif>
+				<cfset loc.destinationFolderPath = ExpandPath("tests/models")>
 				<cfset loc.destinationFilePath = loc.destinationFolderPath & "\#capitalize(arguments.name)#Test.cfc"> 
 	            
 	       		<!--- read the unit test template --->
@@ -204,12 +207,14 @@
 	        </cfcase>
 
 	        <cfcase value="ControllerTest">
-	            
-				<!--- Expand the from and destination folders --->
-	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/default/tests/controllerTest.cfm")>
-	    		<!--- all tests sourced from the default template for now
-	    		<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/#arguments.template#/tests/controllerTest.cfm")> --->
-				<cfset loc.destinationFolderPath = expandPath("tests/functional")>
+
+	        	<!--- Check for a custom model test file --->
+	    		<cfset loc.sourceFilePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/controllerTest.cfm")>
+	    		<!--- if I can't find a custom model test, use the default --->
+	    		<cfif not FileExists(loc.sourceFilePath)>
+	    			<cfset loc.sourceFilePath = expandPath("plugins/scaffold/templates/default/tests/controllerTest.cfm")>
+	    		</cfif>
+				<cfset loc.destinationFolderPath = expandPath("tests/controllers")>
 				<cfset loc.destinationFilePath = loc.destinationFolderPath & "\#capitalize(pluralize(arguments.name))#Test.cfc"> 
 	            
 	       		<!--- read the unit test template --->
@@ -519,7 +524,7 @@
 
 		<cfset var loc = {}>
 		
-		<cfset loc.file = "tests/unit/#capitalize(arguments.name)#Test.cfc">
+		<cfset loc.file = "tests/models/#capitalize(arguments.name)#Test.cfc">
 
 		<!--- Check that the file has not been already created --->
 		<cfif $checkIfFileExists(arguments.name, "ModelTest", arguments.overwrite)>
@@ -539,7 +544,7 @@
 
 		<cfset var loc = {}>
 		
-		<cfset loc.file = "tests/functional/#capitalize(pluralize(arguments.name))#Test.cfc">
+		<cfset loc.file = "tests/controllers/#capitalize(pluralize(arguments.name))#Test.cfc">
 
 		<!--- Check that the file has not been already created --->
 		<cfif $checkIfFileExists(arguments.name, "ControllerTest", arguments.overwrite)>
@@ -664,9 +669,12 @@
 
 	    <cfset var loc = {}>
 
-    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/default/tests/HasTests.cfc")>
-    	<!--- all tests sourced from the default template for now
-    	<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")> --->
+    	<!--- Check for a custom hasTests helper file --->
+		<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfm")>
+		<!--- if I can't find a custom helper, use the default --->
+		<cfif not FileExists(loc.sourcePath)>
+			<cfset loc.sourcePath = expandPath("plugins/scaffold/templates/default/tests/HasTests.cfm")>
+		</cfif>
     	<cfset loc.destinationPath = ExpandPath("tests/HasTests.cfc")>
     	
     	<cfif FileExists(loc.destinationPath)>
@@ -684,9 +692,12 @@
 
 	    <cfset var loc = {}>
 
-	    <cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/default/tests/helpers.cfm")>
-	    <!--- all tests sourced from the default template for now
-	    <cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/HasTests.cfc")> --->
+	    <!--- Check for a custom helper file --->
+		<cfset loc.sourcePath = ExpandPath("plugins/scaffold/templates/#arguments.template#/tests/helpers.cfm")>
+		<!--- if I can't find a custom helper, use the default --->
+		<cfif not FileExists(loc.sourcePath)>
+			<cfset loc.sourcePath = expandPath("plugins/scaffold/templates/default/tests/helpers.cfm")>
+		</cfif>
     	<cfset loc.destinationPath = ExpandPath("tests/helpers.cfm")>
     	
     	<cfif FileExists(loc.destinationPath)>
